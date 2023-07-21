@@ -1,16 +1,36 @@
 package HW19.homewor19.controller;
 
 import HW19.homewor19.entity.Employee;
+import HW19.homewor19.exception.EmployeeAlreadyAddedException;
+import HW19.homewor19.exception.EmployeeNotFoundException;
+import HW19.homewor19.exception.EmployeeStorageIsFullException;
 import HW19.homewor19.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/employee")
 public class EmployeeController {
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(EmployeeNotFoundException.class)
+    public String handleException(EmployeeNotFoundException e){
+        return String.format("%s %s", HttpStatus.NOT_FOUND.value(), e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(EmployeeAlreadyAddedException.class)
+    public String handleException(EmployeeAlreadyAddedException e){
+        return String.format("%s %s", HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(EmployeeStorageIsFullException.class)
+    public String handleException(EmployeeStorageIsFullException e){
+        return String.format("%s %s", HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
     private final EmployeeService employeeService;
 
     @Autowired

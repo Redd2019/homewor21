@@ -1,6 +1,9 @@
 package HW19.homewor19.service;
 
 import HW19.homewor19.entity.Employee;
+import HW19.homewor19.exception.EmployeeAlreadyAddedException;
+import HW19.homewor19.exception.EmployeeNotFoundException;
+import HW19.homewor19.exception.EmployeeStorageIsFullException;
 import org.springframework.stereotype.Service;
 
 import java.lang.ref.PhantomReference;
@@ -15,10 +18,14 @@ public class EmployeeService {
         Employee employee = new Employee(firstName, lastName);
 
         if (employees[MAX_EMPLOYEES_COUNT - 1] != null) {
-            return null;
+           throw new EmployeeStorageIsFullException("превышен лимит количества сотрудников в фирме");
         }
 
         for (int i = 0; i < employees.length; i++) {
+            if (employees[i] != null && employees[i].equals(employee)){
+                throw new EmployeeAlreadyAddedException("добавляемый сотрудник уже имеется в коллекции");
+            }
+
             if (employees[i] == null) {
                 employees[i] = employee;
                 break;
@@ -34,6 +41,11 @@ public class EmployeeService {
                 employee = e;
             }
         }
+
+        if (employee == null){
+            throw new EmployeeNotFoundException("сотрудник не найден");
+        }
+
         return employee;
     }
 
