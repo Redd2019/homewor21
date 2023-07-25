@@ -5,58 +5,61 @@ import HW19.homewor19.exception.EmployeeAlreadyAddedException;
 import HW19.homewor19.exception.EmployeeNotFoundException;
 import HW19.homewor19.exception.EmployeeStorageIsFullException;
 import org.springframework.stereotype.Service;
+import java.util.*;
 
-import java.lang.ref.PhantomReference;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class EmployeeService {
     private final int MAX_EMPLOYEES_COUNT = 2;
 
-    private final List <Employee> employees = new ArrayList<>();
+    private final Map<Integer, Employee> employeeByHashCode = new HashMap<>();
 
     public Employee add(String firstName, String lastName) {
-        Employee employee = new Employee(firstName, lastName);
 
-        if (employees.size() == MAX_EMPLOYEES_COUNT) {
-           throw new EmployeeStorageIsFullException("превышен лимит количества сотрудников в фирме");
+        if (employeeByHashCode.size() == MAX_EMPLOYEES_COUNT) {
+           throw new EmployeeStorageIsFullException("Превышен лимит количества сотрудников в фирме");
         }
 
-        if (employees.contains(employee)){
-                throw new EmployeeAlreadyAddedException("добавляемый сотрудник уже имеется в коллекции");
+        int employeeKey = getEmployeeKey(firstName, lastName);
+
+        if (employeeByHashCode.containsKey(employeeKey)){
+                throw new EmployeeAlreadyAddedException("Добавляемый сотрудник уже имеется в коллекции");
             }
-        employees.add(employee);
+
+        Employee employee = new Employee(firstName, lastName);
+        employeeByHashCode.put(employeeKey,employee);
 
         return employee;
     }
 
     public Employee find(String firstName, String lastName){
-        Employee employee = null;
-        for (Employee e : employees){
-            if (e!= null && firstName.equals(e.getFirstName()) && lastName.equals(e.getLastName())){
-                employee = e;
-            }
-        }
+        int employeeHashCode = getEmployeeKey(firstName, lastName);
+        Employee employee = employeeByHashCode.get(employeeHashCode);
 
-        if (employee == null){
-            throw new EmployeeNotFoundException("сотрудник не найден");
-        }
+        presentCheck(employee);
 
         return employee;
     }
 
     public Employee remove(String firstName, String lastName){
-        Employee employee = find(firstName, lastName);
+        int employeeHashCode = getEmployeeKey(firstName, lastName);
+        Employee employee = employeeByHashCode.remove(employeeHashCode);
 
-        for (Employee e : employees){
-            if (e.equals(employee)){
-                return e;
-            }
-        }
-        return  employee;
+        presentCheck(employee);
+        return employee;
     }
 
     public List<Employee> getAll() {
-        return employees;}
+        return (List<Employee>) employeeByHashCode.values().stream();
+    }
+
+    private int getEmployeeKey(String firstName, String lastName){
+        return Objects.hash(firstName,lastName);
+    }
+
+    private void presentCheck(Employee employee) {
+        if (employee == null) {
+            throw new EmployeeNotFoundException("Сотрудник не найден");
+        }
+    }
 }
