@@ -3,13 +3,18 @@ package HW19.homewor19.entity;
 import java.util.Objects;
 
 public class Employee {
-    public final String firstName;
 
-    public final String lastName;
+    private final String firstName;
+    private final String lastName;
+    private final float salary;
 
-    public Employee(String firstName, String lastName) {
+    private final Department department;
+
+    public Employee(String firstName, String lastName, float salary, Department department) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.salary = salary;
+        this.department = department;
     }
 
     public String getFirstName() {
@@ -18,6 +23,14 @@ public class Employee {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public float getSalary() {
+        return salary;
+    }
+
+    public Department getDepartment() {
+        return department;
     }
 
     @Override
@@ -29,9 +42,9 @@ public class Employee {
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return  false;
+        if (o == null || getClass() != o.getClass()) return false;
         Employee employee = (Employee) o;
         return Objects.equals(firstName, employee.firstName) && Objects.equals(lastName, employee.lastName);
     }
@@ -40,5 +53,4 @@ public class Employee {
     public int hashCode() {
         return Objects.hash(firstName, lastName);
     }
-
 }

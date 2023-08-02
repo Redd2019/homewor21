@@ -1,7 +1,8 @@
 package HW19.homewor19.exception;
 
 public class EmployeeAlreadyAddedException extends RuntimeException{
-    public EmployeeAlreadyAddedException(String message){
+
+    public EmployeeAlreadyAddedException(String message) {
         super(message);
     }
 }
